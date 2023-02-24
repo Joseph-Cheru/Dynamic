@@ -1,3 +1,5 @@
+clear all;
+clc;
 tic;
 N_edges = 4;
     %number of edges
@@ -28,7 +30,7 @@ x = [3, 4, 5, 6, 6, 12, 11, 17, 23, 24, 24, 18, 17, 16, 15, 9, 9, 10, 11, 5, 4, 
 i_velocity = [67];
 i_location = [3];
 destination = [8];
-
+60.000
 
 density_jam = 60;
 
@@ -98,12 +100,14 @@ for k = 1:k_final
         a = [a a_j];
     end
 
+    disp("k");
+    disp(k);
     [data_to_edge] = data_delivery_to_edge(t,N_edges,beta,delta,mem_free,a,bandwidth_cloud);
     disp(data_to_edge);
     for j=1:N_edges
         num_min_edges_j =[];
         for i=1:N_vehicles
-            num_min_edegs_i = 0;
+            num_min_edegs_i = 1;
             f1 = 0;
             m =1;
             if len_vec_set(j)>0
@@ -114,26 +118,27 @@ for k = 1:k_final
                 end
             end
             if f1==1
-                num_min_edges_i = edge_edge_min(j,destination(i))+1;
+                num_min_edges_i = edge_edge_min(j,destination(i));
             else
                 num_min_edegs_i = N_edges;
             end
             num_min_edges_j = [num_min_edges_j;num_min_edegs_i];
         end
+
         if len_vec_set(j)>0
-            [data_to_vehicle] = data_delivery_to_vehicle(t,len_vec_set(j),Vec_set{j},mem_free(j),mem_req_k(j,1:N_vehicles),data_to_edge(j),num_min_edges_j,a(j),d_min(j,1:N_vehicles));
+            disp("j");
+            disp(j);
+            %data_to_vehicle = zeros(1,N_vehicles);
+            [data_to_vehicle] = data_delivery_to_vehicle(t,N_vehicles,Vec_set{j},mem_free(j),mem_req_k(j,1:N_vehicles),data_to_edge(j),num_min_edges_j,a(j),d_min(j,1:N_vehicles));
             disp(num_min_edges_j);
             disp(data_to_vehicle);
             disp(mem_req);
-            disp("k");
-            disp(k);
+            
             for i=1:N_vehicles
                 if k<k_final
                     if x(i,k+1) == loc_edge(j);
                         disp("i");
                         disp(i);
-                        disp("j");
-                        disp(j);
                         disp(Vec_set)
                         disp(data_to_vehicle);
                         disp(mem_req(i));
