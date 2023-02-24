@@ -4,8 +4,32 @@ import random
 # import heapdict
 import heapq
 
+def adj_square(src):
+    adj = []
+    if (src in corner_squares):
+        if (src==1):
+            adj = [src+1,src+side_length]
+        elif(src==(side_length)):
+            adj=[src-1,src+side_length]
+        elif(src==(sq-side_length+1)):
+            adj=[src-side_length,src+1]
+        else:
+            adj=[src-side_length,src-1]
+    elif(src<side_length):
+        adj=[src-1,src+1,src+side_length]
+    elif(src%side_length==0):
+        adj=[src-side_length,src-1,src+side_length]
+    elif((src-1)%side_length==0):
+        adj=[src-side_length,src+1,src+side_length]
+    elif((src-(sq-side_length))>0):
+        adj=[src-side_length,src-1,src+1]
+    else:
+        adj=[src-side_length,src-1,src+1,src+side_length]
+    return adj
+
+
 def calculate_distances(src):
-    distances = {vertex: float('infinity') for vertex in range(sq)}
+    distances = {vertex: float('infinity') for vertex in range(1,sq+1)}
     distances[src] = 0
     ete =[]
 
@@ -18,7 +42,7 @@ def calculate_distances(src):
         if current_distance > distances[current_vertex]:
             continue
 
-        for neighbor in adj_square[current_vertex]:
+        for neighbor in adj_square(current_vertex):
             if neighbor in loc_edge:
                 distance = current_distance + 1
             else:
@@ -29,63 +53,41 @@ def calculate_distances(src):
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 heapq.heappush(pq, (distance, neighbor))
-
     for v in distances.keys():
-        dist = list(distances.values())[v]
+        dist = distances[v]+1
         ete.append(dist)
     return ete
 
+
 side_length = int(input("Enter side length: "))
-sq = np.square(side_length)
+sq = np.square(side_length) # total number of squares
 
 border_squares =[]
 non_border_squares =[]
-corner_square =[]
-corner_square.append(0)
-corner_square.append(side_length-1)
-corner_square.append(sq-side_length)
-corner_square.append(sq-1)
+corner_squares =[]
+corner_squares.append(1)
+corner_squares.append(side_length)
+corner_squares.append(sq-side_length+1)
+corner_squares.append(sq)
 
-for n in range (0,sq):
-    if (n<side_length):
+for n in range (1,sq+1):
+    if (n<=side_length):
         border_squares.append(n)
     elif(n%side_length==0):
         border_squares.append(n)
-    elif((n+1)%side_length==0):
+    elif((n-1)%side_length==0):
         border_squares.append(n)
     elif((n-(sq-side_length)) >0):
         border_squares.append(n)
     else:
         non_border_squares.append(n)
-adj_square = []
-for n in range (0,sq):
-    if (n in corner_square):
-        if (n==0):
-            adj_square.append([1,side_length])
-        elif(n==(side_length-1)):
-            adj_square.append([n-1,n+side_length])
-        elif(n==(sq-side_length)):
-            adj_square.append([n-side_length,n+1])
-        else:
-            adj_square.append([n-side_length,n-1])
-    elif(n<side_length):
-        adj_square.append([n-1,n+1,n+side_length])
-    elif(n%side_length==0):
-        adj_square.append([n-side_length,n+1,n+side_length])
-    elif((n+1)%side_length==0):
-        adj_square.append([n-side_length,n-1,n+side_length])
-    elif((n-(sq-side_length))>0):
-        adj_square.append([n-side_length,n-1,n+1])
-    else:
-        adj_square.append([n-side_length,n-1,n+1,n+side_length])
+print(border_squares)
+print(non_border_squares)
+print(corner_squares)
 
-# print(border_squares)
-# print(non_border_squares)
-# print(corner_square)
-# print(adj_square)
-
-num_edges = int(input("Enter number of edges: "))
-loc_edge = [7,10,25,28]
+# num_edges = int(input("Enter number of edges: "))
+num_edges = 4
+loc_edge = [8,11,26,29]
 mem_edge = []
 mem_proc = []
 bandwidth_edge = []
@@ -99,7 +101,7 @@ for j in range(num_edges):
     mem_proc.append(random.randint(0,150))
     bandwidth_edge.append(random.randint(8,15))
     l_cov.append(random.randint(6,16)/10.0)
-    adj_square_edge.append(adj_square[loc_edge[j]])
+    adj_square_edge.append(adj_square(loc_edge[j]))
 
 print("Edge Locations=",loc_edge)
 print("Memory of Edge=",mem_edge)
@@ -109,14 +111,11 @@ print("Coverage Length of Edge = ",l_cov)
 print("Adjacent Squares of Edges = ",adj_square_edge)
 
 num_vehicles = int(input("Enter number of vehicles: "))
-# print(num_vehicles)
+
 start_loc_vehicles =[]
-# initial_velocity = []
-# poss_direction = []
-# total_dist = []
+
 curr_loc = []
 velocity = []
-# prev_dir = []
 path =[]
 mem_req = []
 num_alter_vehicles = int(num_vehicles/10)
@@ -130,7 +129,6 @@ for i in range(num_vehicles):
     velocity.append(random.randint(50,70))
     curr_loc.append(int(random.choice(border_squares)))
     mem_req.append(random.randint(60,80))
-   # total_dist.append(0)
 print("Start Location of Vehicles =",curr_loc)
 print("Initial Velocity =",velocity)
 print("Requested Memory=",mem_req)
@@ -139,17 +137,16 @@ k =0
 t =5
 K_final = 60
 
-terminator=np.empty(num_vehicles)
+terminator=np.zeros(num_vehicles)
 
 d_dist =[]
 next_square =[]
 #For k=0
 for i in range(num_vehicles):
     dist = int(velocity[i]*(5.0/18.0)*t)
-    # print(dist)
     if (dist>50):
         l =curr_loc[i]
-        next_square.append(int(random.choice(adj_square[l])))
+        next_square.append(int(random.choice(adj_square(l))))
         d_dist.append(dist - 50)
 
     else:
@@ -157,12 +154,6 @@ for i in range(num_vehicles):
         d_dist.append(dist)
     path.append([curr_loc[i]])
     velocity[i] = random.randint(50,70)
-
-# print("Path =",path)
-# print("CUrrent Location =",curr_loc)
-# print("Velocity =",velocity)
-# print("Directional distance =",d_dist)
-# print("Next square =",next_square)
 
 num_edge_passed=np.zeros(num_vehicles)
 
@@ -189,13 +180,11 @@ for k in range (1,K_final):
         if ((dist+d_dist[i])>100):
             l =curr_loc[i]
             next_possible_square =[]
-            for square in (adj_square[l]):
+            for square in (adj_square(l)):
                 if square not in (path[i]):
                     next_possible_square.append(square)
             if (len(next_possible_square)==0):
-                # print(k)
-                # print("No more paths possible hence cutting circle for vehicle",i)
-                next_square[i]=(random.choice(adj_square[l]))
+                next_square[i]=(random.choice(adj_square(l)))
             else:
                 next_square[i]=(random.choice(next_possible_square))
             d_dist[i]=(dist + d_dist[i] - 100)
@@ -207,21 +196,19 @@ for k in range (1,K_final):
             velocity[i] = random.randint(50,70)
 
 for i in range(num_vehicles):
-    if (terminator[i] not in range(0,sq)):
+    if (terminator[i] not in range(1,sq+1)):
         terminator[i]=curr_loc[i]
 
 print("Path = ",path)
 print("Final Velocities = ",velocity)
 print("Destination = ",terminator)
+                                              
 
-
-                                                                        
-
-edge_to_edge_dist = []
+edge_to_square_dist = []
 for j in range(num_edges):
     src = loc_edge[j]
-    edge_to_edge_dist.append(calculate_distances(src))
+    edge_to_square_dist.append(calculate_distances(src))
 
-print("Minimum number of edges in path = ",edge_to_edge_dist)
+print("Minimum number of edges in path = ",edge_to_square_dist)
 
 #output to csv file

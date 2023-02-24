@@ -13,13 +13,9 @@ cvx_begin
 
     for i = 1:nov
         leftover_data(i) = mem_req(Vec_set(i))-data_to_vehicle(i);
-        leftover_ratio(i) = leftover_data(i)/(num_min_edges(Vec_set(i))+1);
+        leftover_ratio(i) = leftover_data(i)/(num_min_edges(Vec_set(i)));
         leftover_ratio_sum = leftover_ratio_sum + leftover_ratio(i);
     end
-
-    disp(leftover_ratio_sum); %testing
-    disp(leftover_ratio(1)); %testing
-    disp(leftover_data(1)); %testing
 
     minimize leftover_ratio_sum
     subject to

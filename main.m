@@ -3,38 +3,38 @@ N_edges = 4;
     %number of edges
 N_vehicles = 1;
     %number of vehicles at at zeroth time slot
-loc_edge = [7, 10, 25, 28];
+loc_edge = [8,11,26,29];
     %Location of the edges
-mem_req = [78];
+mem_req = [76];
     %requested memory of all vehicles  between 60 and 80
-mem_edge = [430, 421, 412, 497];
+mem_edge = [464, 427, 439, 455];
     %total memory of al edges between 400 and 500
-mem_proc = [63, 9, 29, 66];
+mem_proc = [31, 66, 149, 49];
     %processing memory of all edges between 0 and 150
-bandwidth_edge = [9, 9, 12, 8];
+bandwidth_edge = [14, 12, 15, 13];
     %total bandwidth of all edges to send data to vehicles between 8 and 15
-l_cov = [0.8, 1.2, 1.3, 0.7];
+l_cov = [1.2, 0.8, 0.9, 1.1];
     %coverage length of edges        
-k_final = 40;
+k_final = 46;
     %last time slot
 beta = 0.36;
 delta = 0.36;
-t =3;
+t =5;
 
-adj_square_edge = [1, 6, 8, 13; 4, 9, 11, 16; 19, 24, 26, 31; 22, 27, 29, 34];
+adj_square_edge = [2, 7, 9, 14; 5, 10, 12, 17; 20, 25, 27, 32; 23, 28, 30, 35];
 
-x = [32, 33, 27, 27, 28, 29, 23, 22, 21, 21, 20, 14, 15, 16, 17, 11, 11, 10, 9, 8, 8, 2, 1, 7, 6, 0, 1, 2, 2, 3, 4, 5, 4, 5, 5, 4, 3, 2, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7];
+x = [3, 4, 5, 6, 6, 12, 11, 17, 23, 24, 24, 18, 17, 16, 15, 9, 9, 10, 11, 5, 4, 4, 10, 16, 22, 28, 27, 27, 21, 20, 19, 13, 7, 7, 8, 14, 13, 7, 7, 1, 2, 1, 7, 7, 13, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
 
-i_velocity = [58];
-i_location = [32];
-destination = [7];
+i_velocity = [67];
+i_location = [3];
+destination = [8];
 
 
 density_jam = 60;
 
 bandwidth_cloud = 400;
 
-edge_edge_min = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+edge_edge_min = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1; 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1; 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1; 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
  %to change
 
 for k = 1:k_final
@@ -52,7 +52,7 @@ for k = 1:k_final
         d_min_j = [];
         for i = 1:N_vehicles
             for z = 1:4
-                if location(i) == adj_square_edge(j,z)
+                if location(i) == adj_square_edge(j,z) || location(i) == loc_edge(j)
                     set = [set i];
                 end
             end
