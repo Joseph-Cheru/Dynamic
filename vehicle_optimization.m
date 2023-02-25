@@ -1,5 +1,8 @@
 function [data_to_vehicle] = vehicle_optimization(N,mem_req,data_to_edge,d_min);
-
+disp(N);
+disp(mem_req);
+disp(data_to_edge);
+disp(d_min);
 nov = N;
 cvx_begin
     variable data_to_vehicle(nov);
@@ -19,6 +22,6 @@ cvx_begin
 
         for i=1:nov
             
-            data_to_vehicle(i) >= d_min;
+            data_to_vehicle(i) <= d_min;
         end
 cvx_end
