@@ -1,43 +1,6 @@
 clear all;
 clc;
 tic;
-N_edges = 4;
-    %number of edges
-N_vehicles = 1;
-    %number of vehicles at at zeroth time slot
-loc_edge = [8,11,26,29];
-    %Location of the edges
-mem_req = [76];
-    %requested memory of all vehicles  between 60 and 80
-mem_edge = [464, 427, 439, 455];
-    %total memory of al edges between 400 and 500
-mem_proc = [31, 66, 149, 49];
-    %processing memory of all edges between 0 and 150
-bandwidth_edge = [14, 12, 15, 13];
-    %total bandwidth of all edges to send data to vehicles between 8 and 15
-l_cov = [1.2, 0.8, 0.9, 1.1];
-    %coverage length of edges        
-k_final = 46;
-    %last time slot
-beta = 0.36;
-delta = 0.36;
-t =5;
-
-adj_square_edge = [2, 7, 9, 14; 5, 10, 12, 17; 20, 25, 27, 32; 23, 28, 30, 35];
-
-x = [3, 4, 5, 6, 6, 12, 11, 17, 23, 24, 24, 18, 17, 16, 15, 9, 9, 10, 11, 5, 4, 4, 10, 16, 22, 28, 27, 27, 21, 20, 19, 13, 7, 7, 8, 14, 13, 7, 7, 1, 2, 1, 7, 7, 13, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
-
-i_velocity = [67];
-i_location = [3];
-destination = [8];
-60.000
-
-density_jam = 60;
-
-bandwidth_cloud = 400;
-
-edge_edge_min = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1; 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1; 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1; 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
- %to change
 
 for k = 1:k_final
     %read data from file
@@ -54,7 +17,8 @@ for k = 1:k_final
         d_min_j = [];
         for i = 1:N_vehicles
             for z = 1:4
-                if location(i) == adj_square_edge(j,z) || location(i) == loc_edge(j)
+                %if location(i) == adj_square_edge(j,z) || location(i) == loc_edge(j)
+                if location(i) == adj_square_edge(j,z) && mem_req(i) > 1
                     set = [set i];
                 end
             end
@@ -72,8 +36,8 @@ for k = 1:k_final
                 end
             end
             if mem_req(i) <= 0
-                mem_req(i) = 0
-                f = 0
+                mem_req(i) = 0;
+                f = 0;
             end
             if f==1
                 min_j = (bandwidth_edge(j)*t)/length(set);
@@ -129,32 +93,40 @@ for k = 1:k_final
             disp("j");
             disp(j);
             %data_to_vehicle = zeros(1,N_vehicles);
-            [data_to_vehicle] = data_delivery_to_vehicle(t,N_vehicles,Vec_set{j},mem_free(j),mem_req_k(j,1:N_vehicles),data_to_edge(j),num_min_edges_j,a(j),d_min(j,1:N_vehicles));
-            disp(num_min_edges_j);
+            disp("Vehicle set");
+            disp(Vec_set{j});
+            [data_to_vehicle] = data_delivery_to_vehicle(t,len_vec_set(j),Vec_set{j},mem_free(j),mem_req_k(j,1:N_vehicles),data_to_edge(j),num_min_edges_j,a(j),d_min(j,1:N_vehicles));
             disp(data_to_vehicle);
             disp(mem_req);
             
-            for i=1:N_vehicles
+            for i=1:len_vec_set(j)
                 if k<k_final
-                    if x(i,k+1) == loc_edge(j);
-                        disp("i");
-                        disp(i);
-                        disp(Vec_set)
+                    if x(Vec_set{j}(i),k+1) == loc_edge(j)
                         disp(data_to_vehicle);
-                        disp(mem_req(i));
+                        disp(mem_req(Vec_set{j}(i)));
                         disp("minus");
                         % if data_to_vehicle(i)>0;
-                        mem_req(i) = mem_req(i) - data_to_vehicle(i);
-                        % end                   
+                        mem_req(Vec_set{j}(i)) = mem_req(Vec_set{j}(i)) - data_to_vehicle(i);
+                        % end         
+                        if mem_req(Vec_set{j}(i))<1
+                            mem_req(Vec_set{j}(i)) = 0;
+                        end         
                     end
                 end
             end
         end
     end
 end
-
+not_deli =0;
 disp(mem_req);
+for i=1:N_vehicles
+    if mem_req(i)>1
+        disp("not delivered");
+        not_deli = not_deli+1;
+        disp(i);
+    end
+end
+disp("not delivered number");
+disp(not_deli);
 total_time = toc;
 disp(total_time);
-
-
