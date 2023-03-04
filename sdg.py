@@ -4,9 +4,11 @@ import random
 # import heapdict
 import heapq
 
+import sys
+
 side_length = 15
-num_edges = 36 #49, 64, 81, 100
-num_vehicles = 100# 100(36, 49), 200(36, 49, 64), 300(49, 64,81), 400(81, 100)
+num_edges = int(sys.argv[1]) #36, 49, 64, 81, 100
+num_vehicles = int(sys.argv[2])# 100(36, 49), 200(36, 49, 64), 300(49, 64,81), 400(81, 100)
 t = 20
 
 def adj_square(src):
@@ -168,7 +170,7 @@ def alter_path_calculation(i,path,k_start,K_final):
         alter_path[i].append(location)
         if (velocity!=0):
             velocity = random.randint(20,80)
-    print("alter_path vehcile number = ",i)
+    # print("alter_path vehcile number = ",i)
 
 
 sq = np.square(side_length) # total number of squares
@@ -423,7 +425,7 @@ for i in range(num_vehicles):
     new_ov_set.append(0)
 ov_set.append(new_ov_set)
 for j in range(num_edges):
-    print(len(over_set[j]))
+    # print(len(over_set[j]))
     for k in range(len(over_set[j])):
         new_ov_set = []
         for i in range(num_vehicles):
@@ -432,7 +434,7 @@ for j in range(num_edges):
             else:
                 new_ov_set.append(0)
         ov_set.append(new_ov_set)
-print(len(ov_set))
+# print(len(ov_set))
 
 print("\nov_sets = [",end='')
 for k in range(len(ov_set)-1):
