@@ -1,0 +1,10 @@
+comarison model
+1) my heuristic
+2) base optimal case without route change with overlap
+3) optimal allocation with correct route
+
+comparison parameters
+1) number of vehicles serviced 
+2) bandwidth cost of data to vehicle delivery ( in my heuristic only consider actually serviced vehicles)
+3) total memory usage at edge for all time slots (take sum of data to edge across al edge for each time slot and compare it with the sum of max memory requirement of each overlapping set at each edge
+  

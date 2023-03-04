@@ -1,6 +1,14 @@
 clear all;
 clc;
-tic;
+
+% add data from output.txt here 
+
+max_v_time = 0;
+max_e_time = 0;
+final_slot = 0;
+final_flag = 0;
+
+bandwidth_cost = 0;
 
 for k = 1:k_final
     %read data from file
@@ -66,7 +74,12 @@ for k = 1:k_final
 
     disp("k");
     disp(k);
+    tic
     [data_to_edge] = data_delivery_to_edge(t,N_edges,beta,delta,mem_free,a,bandwidth_cloud);
+    e_time = toc;
+    if max_e_time < e_time
+        max_e_time = e_time;
+    end    
     disp(data_to_edge);
     for j=1:N_edges
         num_min_edges_j =[];
@@ -95,7 +108,14 @@ for k = 1:k_final
             %data_to_vehicle = zeros(1,N_vehicles);
             disp("Vehicle set");
             disp(Vec_set{j});
+            tic
             [data_to_vehicle] = data_delivery_to_vehicle(t,len_vec_set(j),Vec_set{j},mem_free(j),mem_req_k(j,1:N_vehicles),data_to_edge(j),num_min_edges_j,a(j),d_min(j,1:N_vehicles));
+            v_time = toc;
+            if max_v_time < v_time
+                max_v_time = v_time;
+            end
+            bandwidth_util = (sum(data_to_vehicle))/(t*bandwidth_edge(j));
+            bandwidth_cost = bandwidth_cost + (beta*(1+bandwidth_util)^2);  
             disp(data_to_vehicle);
             disp(mem_req);
             
@@ -116,9 +136,24 @@ for k = 1:k_final
             end
         end
     end
+    if final_flag == 0
+        num_serviced_vehicles = 0;
+        for i=1:N_vehicles
+            if mem_req(i) <= 0
+                num_serviced_vehicles = num_serviced_vehicles+1;
+            end
+            if num_serviced_vehicles >= N_vehicles
+                final_slot = k;
+                final_flag = 1;
+            end 
+        end
+    end
 end
 not_deli =0;
-disp(mem_req);
+disp("Time slot when last vehcile is serviced");
+disp(final_slot);
+disp("Time for last delivery");
+disp((final_slot*t)/3600.0);
 for i=1:N_vehicles
     if mem_req(i)>1
         disp("not delivered");
@@ -128,5 +163,8 @@ for i=1:N_vehicles
 end
 disp("not delivered number");
 disp(not_deli);
-total_time = toc;
+total_time = max_e_time + max_v_time;
+disp("total time");
 disp(total_time);
+disp("bandwidth cost");
+disp(bandwidth_cost);
